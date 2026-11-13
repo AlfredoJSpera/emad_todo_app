@@ -76,6 +76,12 @@ class _TodoHomeScreenState extends State<TodoHomeScreen> {
                     todos.add(TodoItem(title.trim(), priority, false));
                   });
                   Navigator.pop(dialogContext);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Task created!'),
+                      duration: const Duration(seconds: 1),
+                    ),
+                  );
                 } else {
                   setDialogState(() {
                     showError = true;
@@ -107,6 +113,12 @@ class _TodoHomeScreenState extends State<TodoHomeScreen> {
                 todos.removeAt(index);
               });
               Navigator.pop(dialogContext);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Task removed!'),
+                  duration: const Duration(seconds: 1),
+                ),
+              );
             },
             child: const Text("Delete"),
           ),
