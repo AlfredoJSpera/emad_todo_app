@@ -62,9 +62,7 @@ class _TodoHomeScreenState extends State<TodoHomeScreen> {
               onPressed: () {
                 if (title.trim().isNotEmpty) {
                   setState(() {
-                    todos.add(
-                      TodoItem(title.trim(), priority, false),
-                    );
+                    todos.add(TodoItem(title.trim(), priority, false));
                   });
                   Navigator.pop(dialogContext);
                 }
@@ -88,36 +86,40 @@ class _TodoHomeScreenState extends State<TodoHomeScreen> {
         ],
       ),
       actions: [
-        FilledButton(
-          onPressed: _showAddTodoDialog,
-          child: Icon(Icons.add),
-        ),
+        FilledButton(onPressed: _showAddTodoDialog, child: Icon(Icons.add)),
       ],
     ),
-    body: ListView.builder(
-      itemCount: todos.length,
-      itemBuilder: (context, index) => Card(
-        child: ListTile(
-          leading: Checkbox(
-            value: todos[index].completed,
-            onChanged: (v) {
-              setState(() {
-                bool isNowCompleted = v ?? false;
-                todos[index].completed = isNowCompleted;
-              });
-            },
+    body: todos.isEmpty
+        ? const Center(
+            child: Text(
+              "No tasks yet.",
+              style: TextStyle(color: Colors.grey, fontSize: 16),
+            ),
+          )
+        : ListView.builder(
+            itemCount: todos.length,
+            itemBuilder: (context, index) => Card(
+              child: ListTile(
+                leading: Checkbox(
+                  value: todos[index].completed,
+                  onChanged: (v) {
+                    setState(() {
+                      bool isNowCompleted = v ?? false;
+                      todos[index].completed = isNowCompleted;
+                    });
+                  },
+                ),
+                title: Row(
+                  children: [
+                    if (todos[index].priority) ...[
+                      const Icon(Icons.flag, color: Colors.red, size: 20),
+                      const SizedBox(width: 8),
+                    ],
+                    Expanded(child: Text(todos[index].title)),
+                  ],
+                ),
+              ),
+            ),
           ),
-          title: Row(
-            children: [
-              if (todos[index].priority) ...[
-                const Icon(Icons.flag, color: Colors.red, size: 20),
-                const SizedBox(width: 8),
-              ],
-              Expanded(child: Text(todos[index].title)),
-            ],
-          ),
-        ),
-      ),
-    ),
   );
 }
