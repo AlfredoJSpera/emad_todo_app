@@ -32,6 +32,7 @@ class _TodoHomeScreenState extends State<TodoHomeScreen> {
   void _showAddTodoDialog() {
     String title = "";
     bool priority = false;
+    bool showError = false;
 
     showDialog(
       context: context,
@@ -43,8 +44,18 @@ class _TodoHomeScreenState extends State<TodoHomeScreen> {
             children: [
               TextField(
                 autofocus: true,
-                decoration: const InputDecoration(hintText: 'Enter title here'),
-                onChanged: (v) => setDialogState(() => title = v),
+                decoration: InputDecoration(
+                  hintText: 'Enter title here',
+                  errorText: showError ? 'Title cannot be empty' : null,
+                ),
+                onChanged: (v) {
+                  setDialogState(() {
+                    title = v;
+                    if (showError && v.trim().isNotEmpty) {
+                      showError = false;
+                    }
+                  });
+                },
               ),
               CheckboxListTile(
                 title: const Text("Priority"),
@@ -65,6 +76,10 @@ class _TodoHomeScreenState extends State<TodoHomeScreen> {
                     todos.add(TodoItem(title.trim(), priority, false));
                   });
                   Navigator.pop(dialogContext);
+                } else {
+                  setDialogState(() {
+                    showError = true;
+                  });
                 }
               },
               child: const Text("Create"),
