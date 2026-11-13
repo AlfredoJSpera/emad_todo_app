@@ -37,7 +37,7 @@ class _TodoHomeScreenState extends State<TodoHomeScreen> {
       context: context,
       builder: (dialogContext) => StatefulBuilder(
         builder: (context, setDialogState) => AlertDialog(
-          title: const Text("Create new"),
+          title: const Text("Add Task"),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
