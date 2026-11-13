@@ -29,6 +29,54 @@ class _TodoHomeScreenState extends State<TodoHomeScreen> {
 
   int get completedCount => todos.where((item) => item.completed).length;
 
+  void _showAddTodoDialog() {
+    String title = "";
+    bool priority = false;
+
+    showDialog(
+      context: context,
+      builder: (dialogContext) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: const Text("Create new"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                autofocus: true,
+                decoration: const InputDecoration(hintText: 'Enter title here'),
+                onChanged: (v) => setDialogState(() => title = v),
+              ),
+              CheckboxListTile(
+                title: const Text("Priority"),
+                value: priority,
+                onChanged: (v) => setDialogState(() => priority = v ?? false),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text("Close"),
+            ),
+            FilledButton(
+              onPressed: () {
+                if (title.trim().isNotEmpty) {
+                  setState(() {
+                    todos.add(
+                      TodoItem(title.trim(), priority, false),
+                    );
+                  });
+                  Navigator.pop(dialogContext);
+                }
+              },
+              child: const Text("Create"),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
@@ -36,64 +84,12 @@ class _TodoHomeScreenState extends State<TodoHomeScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text("TODOs"),
-          Text(
-            "Completed: $completedCount",
-            style: TextStyle(fontSize: 15),
-          ),
+          Text("Completed: $completedCount", style: TextStyle(fontSize: 15)),
         ],
       ),
       actions: [
         FilledButton(
-          onPressed: () {
-            bool addModalPriority = false;
-            String addModalTitle = "";
-            showDialog(
-              context: context,
-              builder: (dialogContext) => StatefulBuilder(
-                builder: (context, setDialogState) => AlertDialog(
-                  title: Text("Create new"),
-                  content: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      TextField(
-                        decoration: InputDecoration(
-                          hintText: 'Enter title here',
-                        ),
-                        onChanged: (v) =>
-                            setDialogState(() => addModalTitle = v),
-                      ),
-                      CheckboxListTile(
-                        title: Text("Priority"),
-                        value: addModalPriority,
-                        onChanged: (v) {
-                          setDialogState(() => addModalPriority = v ?? false);
-                        },
-                      ),
-                    ],
-                  ),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(dialogContext),
-                      child: Text("Close"),
-                    ),
-                    FilledButton(
-                      onPressed: () {
-                        if (addModalTitle.isNotEmpty) {
-                          setState(() {
-                            todos.add(
-                              TodoItem(addModalTitle, addModalPriority, false),
-                            );
-                          });
-                          Navigator.pop(dialogContext);
-                        }
-                      },
-                      child: Text("Create"),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
+          onPressed: _showAddTodoDialog,
           child: Icon(Icons.add),
         ),
       ],
