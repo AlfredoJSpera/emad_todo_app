@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 void main() => runApp(
   MaterialApp(
-    home: TodoHomeScreen(),
+    home: const TodoHomeScreen(),
     theme: ThemeData(
       colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
     ),
@@ -75,51 +75,80 @@ class _TodoHomeScreenState extends State<TodoHomeScreen> {
     );
   }
 
+  void _showDeleteDialog(int index) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text("Delete Task"),
+        content: Text("Are you sure you want to delete \"${todos[index].title}\"?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: const Text("Cancel"),
+          ),
+          FilledButton(
+            onPressed: () {
+              setState(() {
+                todos.removeAt(index);
+              });
+              Navigator.pop(dialogContext);
+            },
+            child: const Text("Delete"),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("TODOs"),
-          Text("Completed: $completedCount", style: TextStyle(fontSize: 15)),
+          const Text("TODOs"),
+          Text("Completed: $completedCount", style: const TextStyle(fontSize: 15)),
         ],
       ),
       actions: [
-        FilledButton(onPressed: _showAddTodoDialog, child: Icon(Icons.add)),
+        FilledButton(onPressed: _showAddTodoDialog, child: const Icon(Icons.add)),
       ],
     ),
     body: todos.isEmpty
         ? const Center(
-            child: Text(
-              "No tasks yet.",
-              style: TextStyle(color: Colors.grey, fontSize: 16),
-            ),
-          )
+      child: Text(
+        "No tasks yet.",
+        style: TextStyle(color: Colors.grey, fontSize: 16),
+      ),
+    )
         : ListView.builder(
-            itemCount: todos.length,
-            itemBuilder: (context, index) => Card(
-              child: ListTile(
-                leading: Checkbox(
-                  value: todos[index].completed,
-                  onChanged: (v) {
-                    setState(() {
-                      bool isNowCompleted = v ?? false;
-                      todos[index].completed = isNowCompleted;
-                    });
-                  },
-                ),
-                title: Row(
-                  children: [
-                    if (todos[index].priority) ...[
-                      const Icon(Icons.flag, color: Colors.red, size: 20),
-                      const SizedBox(width: 8),
-                    ],
-                    Expanded(child: Text(todos[index].title)),
-                  ],
-                ),
-              ),
-            ),
+      itemCount: todos.length,
+      itemBuilder: (context, index) => Card(
+        child: ListTile(
+          leading: Checkbox(
+            value: todos[index].completed,
+            onChanged: (v) {
+              setState(() {
+                bool isNowCompleted = v ?? false;
+                todos[index].completed = isNowCompleted;
+              });
+            },
           ),
+          title: Row(
+            children: [
+              if (todos[index].priority) ...[
+                const Icon(Icons.flag, color: Colors.red, size: 20),
+                const SizedBox(width: 8),
+              ],
+              Expanded(child: Text(todos[index].title)),
+            ],
+          ),
+          trailing: IconButton(
+            icon: const Icon(Icons.delete_outline, color: Colors.grey),
+            onPressed: () => _showDeleteDialog(index),
+          ),
+        ),
+      ),
+    ),
   );
 }
