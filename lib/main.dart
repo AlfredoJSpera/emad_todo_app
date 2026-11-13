@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 void main() => runApp(
   MaterialApp(
-    home: Demo(),
+    home: TodoHomeScreen(),
     theme: ThemeData(
       colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepOrange),
     ),
@@ -17,14 +17,17 @@ class TodoItem {
   TodoItem(this.title, this.priority, this.completed);
 }
 
-class Demo extends StatefulWidget {
+class TodoHomeScreen extends StatefulWidget {
+  const TodoHomeScreen({super.key});
+
   @override
-  State<Demo> createState() => _DemoState();
+  State<TodoHomeScreen> createState() => _TodoHomeScreenState();
 }
 
-class _DemoState extends State<Demo> {
-  int counter = 0;
+class _TodoHomeScreenState extends State<TodoHomeScreen> {
   final List<TodoItem> todos = [];
+
+  int get completedCount => todos.where((item) => item.completed).length;
 
   @override
   Widget build(BuildContext context) => Scaffold(
@@ -33,7 +36,10 @@ class _DemoState extends State<Demo> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text("TODOs"),
-          Text("Completed: $counter", style: TextStyle(fontSize: 15)),
+          Text(
+            "Completed: $completedCount",
+            style: TextStyle(fontSize: 15),
+          ),
         ],
       ),
       actions: [
@@ -102,31 +108,16 @@ class _DemoState extends State<Demo> {
               setState(() {
                 bool isNowCompleted = v ?? false;
                 todos[index].completed = isNowCompleted;
-
-                if (isNowCompleted) {
-                  counter++;
-                } else {
-                  counter--;
-                }
               });
             },
           ),
           title: Row(
             children: [
-              // Conditionally show the red flag if priority is true
               if (todos[index].priority) ...[
-                const Icon(
-                  Icons.flag,
-                  color: Colors.red,
-                  size: 20,
-                ),
-                const SizedBox(width: 8), // Spacing between flag and text
+                const Icon(Icons.flag, color: Colors.red, size: 20),
+                const SizedBox(width: 8),
               ],
-              Expanded(
-                child: Text(
-                  todos[index].title,
-                ),
-              ),
+              Expanded(child: Text(todos[index].title)),
             ],
           ),
         ),
